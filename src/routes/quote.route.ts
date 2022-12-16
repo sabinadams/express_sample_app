@@ -2,8 +2,8 @@ import * as QuoteController from 'controllers/quote.controller'
 import { Router } from 'express'
 import validate from 'middlewares/validate.middleware'
 import {
-	CreateQuoteSchema,
-	DeleteQuoteSchema
+  CreateQuoteSchema,
+  DeleteQuoteSchema
 } from 'validation/request.schemas'
 
 const router = Router()
