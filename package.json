@@ -8,7 +8,9 @@
 		"lint:check": "eslint . --ext .ts,.tsx --max-warnings 0",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"checks": "npm run format && npm run lint"
+		"checks": "npm run format:check && npm run lint:check",
+		"checks:fix": "npm run format && npm run lint",
+		"prepare": "husky install"
 	},
 	"dependencies": {
 		"@prisma/client": "4.7.1",
@@ -30,6 +32,7 @@
 		"eslint": "^8.29.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prefer-arrow": "^1.2.3",
+		"husky": "^8.0.2",
 		"prettier": "2.8.1",
 		"prisma": "4.7.1",
 		"ts-node": "10.9.1",
