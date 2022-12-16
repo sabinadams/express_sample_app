@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { TypedRequestBody } from 'lib/types';
+import { TypedRequestBody } from '../types/utility';
 import type { SignupSchemaType, SigninSchemaType } from 'validation/request.schemas'
 import { createUser, generateJWT, findUserByUsername, comparePasswords } from 'services/auth.service';
 import { AppError } from 'lib/utility-classes';

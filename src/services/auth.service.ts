@@ -1,6 +1,5 @@
 import { prisma } from 'lib/prisma';
 import { Prisma } from '@prisma/client'
-import { SignupSchemaType } from 'validation/request.schemas'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
@@ -26,6 +25,14 @@ export const generateJWT = (id: number) => {
   }
 
   return jwt.sign({ id }, process.env.API_SECRET, { expiresIn: 86400 })
+}
+
+export const validateJWT = (token: string) => {
+  if (!process.env.API_SECRET ) {
+    throw new Error('API Secret not defined. Unable to validate JWT.')
+  }
+  let payload = jwt.verify(token, process.env.API_SECRET) as { id: number }
+  return payload.id
 }
 
 export const comparePasswords = (input: string, encrypted: string) => {
