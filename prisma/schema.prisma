@@ -23,7 +23,7 @@ model Tag {
 
 model Quote {
   id     Int    @id @default(autoincrement())
-  body   String
+  text   String
   userId Int
   user   User   @relation(fields: [userId], references: [id])
   tags   Tag[]

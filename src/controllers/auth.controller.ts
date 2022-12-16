@@ -1,10 +1,9 @@
-import { RequestHandler } from 'express';
-import { TypedRequestBody } from '../types/utility';
-import type { SignupSchemaType, SigninSchemaType } from 'validation/request.schemas'
+import { Request, RequestHandler } from 'express';
+import type { SignupSchema, SigninSchema } from 'validation/request.schemas'
 import { createUser, generateJWT, findUserByUsername, comparePasswords } from 'services/auth.service';
 import { AppError } from 'lib/utility-classes';
 
-export const signup: RequestHandler = async (req: TypedRequestBody<SignupSchemaType>, res, next) => {
+export const signup: RequestHandler = async (req: Request<unknown, unknown, SignupSchema>, res, next) => {
   const userData = {
     username: req.body.username,
     password: req.body.password
@@ -24,7 +23,7 @@ export const signup: RequestHandler = async (req: TypedRequestBody<SignupSchemaT
   })
 }
 
-export const signin: RequestHandler = async (req: TypedRequestBody<SigninSchemaType>, res, next) => {
+export const signin: RequestHandler = async (req: Request<unknown, unknown, SigninSchema>, res, next) => {
   let { username, password } = req.body
 
   const existing = await findUserByUsername(username)

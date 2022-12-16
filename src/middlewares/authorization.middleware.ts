@@ -4,11 +4,10 @@ import { validateJWT } from "services/auth.service";
 
 
 export default (
-  request: Request, 
+  request: Request<unknown>, 
   response: Response, 
   next: NextFunction
 ) => {
-  request.session = { userId: null }
   if ( request.method === 'OPTIONS' )
     return response.send({ message: 'Preflight check successful.' })
 
@@ -23,8 +22,7 @@ export default (
   }
 
   try {
-    const userId = validateJWT(token)
-    request.session.userId = userId
+    request.session.userId = validateJWT(token)
     next()
   } catch (e) {
     return next(new AppError('validation', 'Invalid access token.'))

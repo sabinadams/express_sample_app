@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AnyZodObject, ZodError } from "zod";
 import { AppError } from "lib/utility-classes";
 export default (schema: AnyZodObject) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request<unknown>, res: Response, next: NextFunction) => {
     try {
       await schema.parseAsync({
         body: req.body,
