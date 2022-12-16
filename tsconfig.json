@@ -1,17 +1,14 @@
 {
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
-  "compilerOptions": {
-    "sourceMap": true,
-    "outDir": "dist",
-    "strict": true,
-    "lib": ["esnext"],
-    "esModuleInterop": true,
-    "baseUrl": "src/",
-    "typeRoots": [
-      "@types",
-      "./node_modules/@types"
-    ]
-  },
+	"ts-node": {
+		"require": ["tsconfig-paths/register"]
+	},
+	"compilerOptions": {
+		"sourceMap": true,
+		"outDir": "dist",
+		"strict": true,
+		"lib": ["esnext"],
+		"esModuleInterop": true,
+		"baseUrl": "src/",
+		"typeRoots": ["@types", "./node_modules/@types"]
+	}
 }

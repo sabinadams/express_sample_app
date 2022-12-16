@@ -1,9 +1,9 @@
-import { Router } from "express";
-const router = Router()
-import validate from 'middlewares/validate.middleware'
 import * as AuthController from 'controllers/auth.controller'
+import { Router } from 'express'
+import validate from 'middlewares/validate.middleware'
+import { SigninSchema, SignupSchema } from 'validation/request.schemas'
 
-import { SignupSchema, SigninSchema } from 'validation/request.schemas'
+const router = Router()
 
 router.post('/signup', validate(SignupSchema), AuthController.signup)
 router.post('/signin', validate(SigninSchema), AuthController.signin)
