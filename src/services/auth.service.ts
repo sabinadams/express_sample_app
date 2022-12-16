@@ -1,7 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { prisma } from 'lib/prisma'
+import prisma from 'lib/prisma'
 
 export const findUserByUsername = async (username: string) => {
   return await prisma.user.findFirst({ where: { username } })
