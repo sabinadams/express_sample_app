@@ -1,10 +1,15 @@
-import path from 'path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  root: 'src',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      lib: '/lib',
+      services: '/services',
+      middlewares: '/middlewares',
+      controllers: '/controllers',
+      routes: '/routes',
+      validation: '/validation'
     }
   }
 })
