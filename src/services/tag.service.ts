@@ -8,25 +8,34 @@ export const upsertTags = async (tags: string[]) => {
 			where: { name: { in: tags } }
 		})
 
-		const names = existingTags.map(tag => tag.name)
-		const ids = existingTags.map(tag => tag.id)
+		const existingNames = existingTags.map(tag => tag.name)
+		const existingIDs = existingTags.map(tag => tag.id)
 
-		for (const tag in tags) {
-			if (!names.includes(tag)) {
-				const newTag = await tx.tag.create({
-					select: { id: true },
-					data: {
-						name: tag,
-						color: randomColor({
-							luminosity: 'light'
-						})
-					}
-				})
-				ids.push(newTag.id)
-			}
+		const createdCount = await tx.tag.createMany({
+			data: tags
+				.filter(tag => !existingNames.includes(tag))
+				.map(tag => ({
+					name: tag,
+					color: randomColor({ luminosity: 'light' })
+				}))
+		})
+
+		const tagIds = existingTags.map(tag => tag.id)
+
+		if (createdCount) {
+			const createdTags = await tx.tag.findMany({
+				select: { id: true },
+				where: {
+					name: { in: existingNames },
+					id: { notIn: existingIDs }
+				}
+			})
+
+			const createdIds = createdTags.map(tag => tag.id)
+			tagIds.push(...createdIds)
 		}
 
-		return ids
+		return tagIds
 	})
 }
 
