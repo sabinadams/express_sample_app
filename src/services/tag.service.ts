@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma'
+import prisma from 'lib/prisma'
 import randomColor from 'randomcolor'
 
 export const upsertTags = async (tags: string[]) => {
