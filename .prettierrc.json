@@ -1,11 +1,11 @@
 {
-	"useTabs": true,
-	"tabWidth": 2,
-	"semi": false,
-	"trailingComma": "none",
-	"singleQuote": true,
-	"bracketSpacing": true,
-	"arrowParens": "avoid",
-	"importOrderSeparation": true,
-	"importOrderSortSpecifiers": true
+  "useTabs": false,
+  "tabWidth": 2,
+  "semi": false,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

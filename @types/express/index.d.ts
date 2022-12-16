@@ -1,10 +1,10 @@
 export {}
 declare global {
-	namespace Express {
-		export interface Request {
-			session: {
-				userId: number
-			}
-		}
-	}
+  namespace Express {
+    export interface Request {
+      session: {
+        userId: number
+      }
+    }
+  }
 }
