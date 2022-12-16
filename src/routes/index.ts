@@ -8,7 +8,7 @@ import authorizationMiddleware from 'middlewares/authorization.middleware'
 router.use('/auth', auth) 
 router.use('/quote', authorizationMiddleware, quote)
 
-router.all('*', ( req, res, next ) => {
+router.all('*', ( req, res ) => {
 	res.status(404).json({
 		message: 'The requested resource could not be found.',
 		path: req.path

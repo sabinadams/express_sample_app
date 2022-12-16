@@ -1,15 +1,15 @@
 import * as QuoteService from 'services/quote.service'
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { CreateQuoteSchema, DeleteQuoteSchema } from 'validation/request.schemas';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
+import type { CreateQuoteSchema, DeleteQuoteSchema } from 'validation/request.schemas';
 import * as TagService  from 'services/tag.service';
 import { AppError } from 'lib/utility-classes';
 
-export const getAllQuotes: RequestHandler = async (req, res, next) => {
+export const getAllQuotes: RequestHandler = async (req, res) => {
   const quotes = await QuoteService.getQuotesByUser(req.session.userId)
   res.json(quotes)
 }
 
-export const createQuote: RequestHandler = async ( req: Request<unknown, unknown, CreateQuoteSchema>, res, next) => {
+export const createQuote: RequestHandler = async ( req: Request<unknown, unknown, CreateQuoteSchema>, res) => {
   const { text, tags } = req.body
   let tagIds: number[] = [];
 

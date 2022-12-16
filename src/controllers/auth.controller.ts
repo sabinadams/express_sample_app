@@ -1,5 +1,5 @@
-import { Request, RequestHandler } from 'express';
 import type { SignupSchema, SigninSchema } from 'validation/request.schemas'
+import type { Request, RequestHandler } from 'express';
 import { createUser, generateJWT, findUserByUsername, comparePasswords } from 'services/auth.service';
 import { AppError } from 'lib/utility-classes';
 
@@ -14,7 +14,7 @@ export const signup: RequestHandler = async (req: Request<unknown, unknown, Sign
   }
   
   const newUser = await createUser(userData)
-  const token = await generateJWT(newUser.id)
+  const token = generateJWT(newUser.id)
 
   res.status(200).json({
     message: `Registered successfully`,
@@ -24,7 +24,7 @@ export const signup: RequestHandler = async (req: Request<unknown, unknown, Sign
 }
 
 export const signin: RequestHandler = async (req: Request<unknown, unknown, SigninSchema>, res, next) => {
-  let { username, password } = req.body
+  const { username, password } = req.body
 
   const existing = await findUserByUsername(username)
 

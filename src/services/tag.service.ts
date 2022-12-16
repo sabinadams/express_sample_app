@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import randomColor from 'randomcolor';
 
-export async function upsertTags(tags: string[]) {
+export const upsertTags = async (tags: string[]) => {
   return await prisma.$transaction(async (tx) => {
     const existingTags = await tx.tag.findMany({
       select: { id: true, name: true },
@@ -9,11 +9,11 @@ export async function upsertTags(tags: string[]) {
     })
 
     const names = existingTags.map(tag => tag.name)
-    let ids = existingTags.map(tag => tag.id)
+    const ids = existingTags.map(tag => tag.id)
 
-    for ( let tag in tags ) {
+    for ( const tag in tags ) {
       if ( !names.includes(tag) ) {
-        let newTag = await tx.tag.create({
+        const newTag = await tx.tag.create({
           select: { id: true },
           data: {
             name: tag,
@@ -30,7 +30,7 @@ export async function upsertTags(tags: string[]) {
   })
 }
 
-export async function deleteOrphanedTags(ids: number[]) {
+export const deleteOrphanedTags = async (ids: number[]) => {
   return await prisma.tag.deleteMany({
     where: { 
       quotes: { none: {} },
