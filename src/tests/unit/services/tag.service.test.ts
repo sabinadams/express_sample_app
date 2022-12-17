@@ -8,14 +8,15 @@ vi.mock('randomcolor', () => ({
   default: vi.fn(() => '#ffffff')
 }))
 
-describe('tag.service', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
-  })
+beforeEach(() => {
+  vi.restoreAllMocks()
+})
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+describe('tag.service', () => {
   describe('upsertTags', () => {
     it('should return a list of tagIds', async () => {
       prismaMock.$transaction.mockResolvedValue([1, 2, 3])
