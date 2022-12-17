@@ -20,10 +20,12 @@ vi.mock('bcrypt', () => ({
 const env = process.env
 
 beforeEach(() => {
+  vi.restoreAllMocks()
   process.env = { ...env }
 })
 
 afterEach(() => {
+  vi.restoreAllMocks()
   process.env = { ...env }
 })
 

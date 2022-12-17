@@ -22,7 +22,7 @@ export const upsertTags = async (tags: string[]) => {
 
     const tagIds = existingTags.map(tag => tag.id)
 
-    if (createdCount) {
+    if (createdCount.count) {
       const createdTags = await tx.tag.findMany({
         select: { id: true },
         where: {
