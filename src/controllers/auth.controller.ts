@@ -1,11 +1,6 @@
 import type { Request, RequestHandler } from 'express'
 import { AppError } from 'lib/utility-classes'
-import {
-  comparePasswords,
-  createUser,
-  findUserByUsername,
-  generateJWT
-} from 'services/auth.service'
+import * as AuthService from 'services/auth.service'
 import type { SigninSchema, SignupSchema } from 'validation/request.schemas'
 
 export const signup: RequestHandler = async (
@@ -41,18 +36,17 @@ export const signin: RequestHandler = async (
 ) => {
   const { username, password } = req.body
 
-  const existing = await findUserByUsername(username)
+  const existing = await AuthService.findUserByUsername(username)
 
   if (!existing) {
     return next(new AppError('validation', 'Account not found.'))
   }
 
-  if (!comparePasswords(password, existing.password)) {
-    console.log('slkdjfslkdjfs')
+  if (!AuthService.comparePasswords(password, existing.password)) {
     return next(new AppError('validation', 'Invalid login.'))
   }
 
-  const token = generateJWT(existing.id)
+  const token = AuthService.generateJWT(existing.id)
 
   res.status(200).json({
     message: 'Login successful!',
