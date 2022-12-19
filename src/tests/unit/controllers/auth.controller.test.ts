@@ -46,7 +46,7 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
@@ -69,12 +69,12 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
+      vi.mocked(AuthService.createUser).mockResolvedValue({
         id: 1,
         username: 'testusername'
       })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(AuthService.createUser).toHaveBeenCalledWith(request.body)
@@ -86,12 +86,12 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
+      vi.mocked(AuthService.createUser).mockResolvedValue({
         id: 1,
         username: 'testusername'
       })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(AuthService.generateJWT).toHaveBeenCalledWith(1)
@@ -103,12 +103,12 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
+      vi.mocked(AuthService.createUser).mockResolvedValue({
         id: 1,
         username: 'testusername'
       })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(response.status).toHaveBeenCalledWith(200)
@@ -130,7 +130,7 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
       await AuthController.signin(request, response, next)
       expect(next).toHaveBeenCalled()
       expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
@@ -144,12 +144,12 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(false)
+      vi.mocked(AuthService.comparePasswords).mockReturnValue(false)
 
       await AuthController.signin(request, response, next)
 
@@ -169,13 +169,13 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(true)
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(AuthService.comparePasswords).mockReturnValue(true)
+      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
 
       await AuthController.signin(request, response, next)
 
@@ -188,13 +188,13 @@ describe('AuthController', () => {
         password: 'testpassword'
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(true)
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(AuthService.comparePasswords).mockReturnValue(true)
+      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
 
       await AuthController.signin(request, response, next)
 

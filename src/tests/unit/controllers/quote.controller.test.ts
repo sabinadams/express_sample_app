@@ -1,14 +1,20 @@
-import * as AuthController from 'controllers/auth.controller'
+import * as QuoteController from 'controllers/quote.controller'
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
-import * as AuthService from 'services/auth.service'
+import * as QuoteService from 'services/quote.service'
+import * as TagService from 'services/tag.service'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('services/auth.service', () => ({
-  findUserByUsername: vi.fn(),
-  comparePasswords: vi.fn(),
-  generateJWT: vi.fn(),
-  createUser: vi.fn()
+vi.mock('services/quote.service', () => ({
+  getQuotesByUser: vi.fn(),
+  createQuote: vi.fn(),
+  getQuoteById: vi.fn(),
+  deleteQuote: vi.fn()
+}))
+
+vi.mock('services/tag.service', () => ({
+  deleteOrphanedTags: vi.fn(),
+  upsertTags: vi.fn()
 }))
 
 vi.mock('lib/utility-classes', () => ({
@@ -25,8 +31,9 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('AuthController', () => {
-  let request: Request
+describe('QuoteController', () => {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  let request: Request<any, any, any, any>
   let response: Response
   let next = vi.fn()
 
@@ -39,170 +46,217 @@ describe('AuthController', () => {
     next = vi.fn()
   })
 
-  describe('signup', () => {
-    it('should throw a validation error if a user already exists with username', async () => {
+  describe('getAllQuotes', () => {
+    it('should respond to the request with all quotes for a user', async () => {
+      request['session'] = { userId: 1 }
+      const quotes = [
+        {
+          id: 1,
+          userId: 1,
+          text: 'Hello world',
+          tags: [
+            {
+              id: 1,
+              color: '#000000',
+              name: 'tag'
+            }
+          ]
+        }
+      ]
+
+      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValue(quotes)
+
+      await QuoteController.getAllQuotes(request, response, next)
+
+      expect(vi.mocked(QuoteService.getQuotesByUser)).toHaveBeenCalledWith(1)
+      expect(response.json).toHaveBeenCalledWith(quotes)
+    })
+
+    it('should throw an error if no session userId', async () => {
+      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValue([])
+      expect(
+        QuoteController.getAllQuotes(request, response, next)
+      ).rejects.toThrowError()
+    })
+  })
+
+  describe('createQuote', () => {
+    it('should attempt to create tags if any provided', async () => {
+      request['session'] = { userId: 1 }
       request.body = {
-        username: 'testusername',
-        password: 'testpassword'
+        text: 'Hello world',
+        tags: [1, 2, 3]
       }
+      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
+      await QuoteController.createQuote(request, response, next)
+      expect(TagService.upsertTags).toHaveBeenCalledWith([1, 2, 3])
+    })
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
-        id: 1,
-        username: 'testusername',
-        password: 'hashedpass'
-      })
-
-      await AuthController.signup(request, response, next)
-
-      expect(AuthService.findUserByUsername).toHaveBeenCalledWith(
-        'testusername'
+    it('should create a quote', async () => {
+      request['session'] = { userId: 1 }
+      request.body = {
+        text: 'Hello world',
+        tags: [1, 2, 3]
+      }
+      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
+      await QuoteController.createQuote(request, response, next)
+      expect(QuoteService.createQuote).toHaveBeenCalledWith(
+        'Hello world',
+        [1, 2, 3],
+        1
       )
-      expect(next).toHaveBeenCalled()
-      expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
-      expect(next.mock.calls[0][0].message).toBeTypeOf('string')
-      expect(next.mock.calls[0][0].type).toBe('validation')
     })
 
-    it('should create a new user if username not taken', async () => {
+    it('should respond to the request with a message and the created quote', async () => {
+      request['session'] = { userId: 1 }
       request.body = {
-        username: 'testusername',
-        password: 'testpassword'
+        text: 'Hello world',
+        tags: [1, 2, 3]
       }
-
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
+      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
+      vi.mocked(QuoteService.createQuote).mockResolvedValue({
         id: 1,
-        username: 'testusername'
+        text: 'Hello world',
+        userId: 1
       })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
-      await AuthController.signup(request, response, next)
 
-      expect(AuthService.createUser).toHaveBeenCalledWith(request.body)
-    })
-
-    it('should create a session token for the new user', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
-        id: 1,
-        username: 'testusername'
-      })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
-      await AuthController.signup(request, response, next)
-
-      expect(AuthService.generateJWT).toHaveBeenCalledWith(1)
-    })
-
-    it('should respond to the request with a message, the user, and the token', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      vi.spyOn(AuthService, 'createUser').mockResolvedValue({
-        id: 1,
-        username: 'testusername'
-      })
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
-      await AuthController.signup(request, response, next)
+      await QuoteController.createQuote(request, response, next)
 
       expect(response.status).toHaveBeenCalledWith(200)
       expect(response.json).toHaveBeenCalledWith({
-        message: `Registered successfully`,
-        user: {
+        message: 'Quote created successfully.',
+        quote: {
           id: 1,
-          username: 'testusername'
-        },
-        token: 'testtoken'
+          text: 'Hello world',
+          userId: 1
+        }
       })
     })
   })
 
-  describe('signin', () => {
-    it('should throw a validation error if no user exists with username', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
+  describe('deleteQuote', () => {
+    it('should return an error if no quote found', async () => {
+      request = { params: { id: 1 } } as Request<
+        { id: 1 },
+        unknown,
+        unknown,
+        unknown
+      >
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue(null)
-      await AuthController.signin(request, response, next)
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue(null)
+
+      await QuoteController.deleteQuote(request, response, next)
+
       expect(next).toHaveBeenCalled()
       expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
-      expect(next.mock.calls[0][0].type).toBe('validation')
       expect(next.mock.calls[0][0].message).toBeTypeOf('string')
+      expect(next.mock.calls[0][0].type).toBe('validation')
     })
 
-    it('should throw a validation error if the password is incorrect', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
+    it('should return an error if quote does not belong to user', async () => {
+      request = {
+        session: { userId: 2 },
+        params: { id: 1 }
+      } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
         id: 1,
-        username: 'testusername',
-        password: 'hashedpass'
+        userId: 999,
+        text: 'Hello world',
+        tags: []
       })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(false)
 
-      await AuthController.signin(request, response, next)
+      await QuoteController.deleteQuote(request, response, next)
 
-      expect(AuthService.comparePasswords).toHaveBeenCalledWith(
-        'testpassword',
-        'hashedpass'
-      )
       expect(next).toHaveBeenCalled()
       expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
-      expect(next.mock.calls[0][0].type).toBe('validation')
       expect(next.mock.calls[0][0].message).toBeTypeOf('string')
+      expect(next.mock.calls[0][0].type).toBe('unauthorized')
     })
 
-    it('should create a session token for the successfully logged-in user', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
+    it('should delete a quote if allowed and available', async () => {
+      request = {
+        session: { userId: 2 },
+        params: { id: 1 }
+      } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
         id: 1,
-        username: 'testusername',
-        password: 'hashedpass'
+        userId: 2,
+        text: 'Hello world',
+        tags: []
       })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(true)
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
 
-      await AuthController.signin(request, response, next)
-
-      expect(AuthService.generateJWT).toHaveBeenCalledWith(1)
+      await QuoteController.deleteQuote(request, response, next)
+      expect(QuoteService.deleteQuote).toHaveBeenCalledWith(1)
     })
 
-    it('should respond to the request with a message, the username, and the token', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
+    it('should delete orphaned tags if quote had tags', async () => {
+      request = {
+        session: { userId: 2 },
+        params: { id: 1 }
+      } as Request<{ id: 1 }, unknown, unknown, unknown>
+
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+        id: 1,
+        userId: 2,
+        text: 'Hello world',
+        tags: [
+          { id: 1, color: '#000000', name: 'tag' },
+          { id: 2, color: '#000000', name: 'tag' }
+        ]
+      })
+
+      await QuoteController.deleteQuote(request, response, next)
+
+      expect(TagService.deleteOrphanedTags).toHaveBeenCalledWith([1, 2])
+    })
+
+    it('should not delete orphaned tags if quote had no tags', async () => {
+      request = {
+        session: { userId: 2 },
+        params: { id: 1 }
+      } as Request<{ id: 1 }, unknown, unknown, unknown>
+
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+        id: 1,
+        userId: 2,
+        text: 'Hello world',
+        tags: []
+      })
+
+      await QuoteController.deleteQuote(request, response, next)
+
+      expect(TagService.deleteOrphanedTags).not.toHaveBeenCalled()
+    })
+
+    it('should respond to the request with a message and the deleted quote', async () => {
+      request = {
+        session: { userId: 2 },
+        params: { id: 1 }
+      } as Request<{ id: 1 }, unknown, unknown, unknown>
+
+      const mockedQuote = {
+        id: 1,
+        userId: 2,
+        text: 'Hello world',
+        tags: []
       }
 
-      vi.spyOn(AuthService, 'findUserByUsername').mockResolvedValue({
-        id: 1,
-        username: 'testusername',
-        password: 'hashedpass'
-      })
-      vi.spyOn(AuthService, 'comparePasswords').mockReturnValue(true)
-      vi.spyOn(AuthService, 'generateJWT').mockReturnValue('testtoken')
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValue(mockedQuote)
+      vi.mocked(QuoteService.deleteQuote).mockResolvedValue(mockedQuote)
 
-      await AuthController.signin(request, response, next)
+      await QuoteController.deleteQuote(request, response, next)
 
       expect(response.status).toHaveBeenCalledWith(200)
       expect(response.json).toHaveBeenCalledWith({
-        message: 'Login successful!',
-        username: 'testusername',
-        token: 'testtoken'
+        message: 'Quote deleted successfully.',
+        quote: {
+          id: 1,
+          userId: 2,
+          text: 'Hello world',
+          tags: []
+        }
       })
     })
   })
