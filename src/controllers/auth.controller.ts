@@ -13,14 +13,14 @@ export const signup: RequestHandler = async (
     password: req.body.password
   }
 
-  if (await findUserByUsername(userData.username)) {
+  if (await AuthService.findUserByUsername(userData.username)) {
     return next(
       new AppError('validation', 'A user already exists with that username')
     )
   }
 
-  const newUser = await createUser(userData)
-  const token = generateJWT(newUser.id)
+  const newUser = await AuthService.createUser(userData)
+  const token = AuthService.generateJWT(newUser.id)
 
   res.status(200).json({
     message: `Registered successfully`,
