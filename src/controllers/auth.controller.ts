@@ -48,6 +48,7 @@ export const signin: RequestHandler = async (
   }
 
   if (!comparePasswords(password, existing.password)) {
+    console.log('slkdjfslkdjfs')
     return next(new AppError('validation', 'Invalid login.'))
   }
 
