@@ -23,13 +23,22 @@ describe('error-handler.middleware', () => {
     request = {} as Request
   })
 
-  it('should return a 400 status code when given an error with no status code', () => {
+  it('should return a 500 status code when given an error with no status code', () => {
     const error = new Error('test')
 
     handler(error, request, response)
 
-    expect(response.status).toHaveBeenCalledWith(400)
-    expect(response.json).toHaveBeenCalledWith({ message: 'test' })
+    expect(response.status).toHaveBeenCalledWith(500)
+  })
+
+  it('should return a static error message when an unhandled error is thrown', () => {
+    const error = new Error('test')
+
+    handler(error, request, response)
+
+    expect(response.json).toHaveBeenCalledWith({
+      message: 'Oops! Something wonky happened...'
+    })
   })
 
   it('should return an error with the provided statusCode', () => {
@@ -38,6 +47,5 @@ describe('error-handler.middleware', () => {
     handler(error, request, response)
 
     expect(response.status).toHaveBeenCalledWith(500)
-    expect(response.json).toHaveBeenCalledWith({ message: 'server-error' })
   })
 })
