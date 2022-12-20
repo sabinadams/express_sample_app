@@ -27,7 +27,7 @@ export default (
   }
 
   try {
-    request.session.userId = validateJWT(token)
+    request['session'] = { userId: validateJWT(token) }
     next()
   } catch (e) {
     return next(new AppError('validation', 'Invalid access token.'))
