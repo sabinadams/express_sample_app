@@ -2,7 +2,7 @@ export class AppError extends Error {
   statusCode = 400
   static typeToCode = {
     validation: 400,
-    unauthorized: 404,
+    unauthorized: 401,
     server: 500
   }
   constructor(type: keyof typeof AppError.typeToCode, message: string) {
