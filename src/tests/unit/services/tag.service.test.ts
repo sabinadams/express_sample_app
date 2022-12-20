@@ -14,14 +14,14 @@ describe('tag.service', () => {
   })
   describe('upsertTags', () => {
     it('should return a list of tagIds', async () => {
-      prismaMock.$transaction.mockResolvedValue([1, 2, 3])
+      prismaMock.$transaction.mockResolvedValueOnce([1, 2, 3])
 
       const tagIds = await TagService.upsertTags(['tag1', 'tag2', 'tag3'])
       expect(tagIds).toStrictEqual([1, 2, 3])
     })
 
     it('should only create tags that do not already exist', async () => {
-      prismaMock.$transaction.mockImplementation(callback =>
+      prismaMock.$transaction.mockImplementationOnce(callback =>
         callback(prismaMock)
       )
 
@@ -51,11 +51,11 @@ describe('tag.service', () => {
     })
 
     it('should give new tags random colors', async () => {
-      prismaMock.$transaction.mockImplementation(callback =>
+      prismaMock.$transaction.mockImplementationOnce(callback =>
         callback(prismaMock)
       )
 
-      prismaMock.tag.findMany.mockResolvedValue([])
+      prismaMock.tag.findMany.mockResolvedValue([]) // Not just once
       prismaMock.tag.createMany.mockResolvedValueOnce({ count: 3 })
 
       await TagService.upsertTags(['tag1', 'tag2', 'tag3'])
@@ -63,7 +63,7 @@ describe('tag.service', () => {
     })
 
     it('should find and return new tagIds when creating tags', async () => {
-      prismaMock.$transaction.mockImplementation(callback =>
+      prismaMock.$transaction.mockImplementationOnce(callback =>
         callback(prismaMock)
       )
 
@@ -94,7 +94,7 @@ describe('tag.service', () => {
     })
 
     it('should return an empty string if no tags passed', async () => {
-      prismaMock.$transaction.mockImplementation(callback =>
+      prismaMock.$transaction.mockImplementationOnce(callback =>
         callback(prismaMock)
       )
 
@@ -110,14 +110,14 @@ describe('tag.service', () => {
 
   describe('deleteOrphanedTags', () => {
     it('should delete tags that are not associated with any quotes', async () => {
-      prismaMock.tag.deleteMany.mockResolvedValue({ count: 1 })
+      prismaMock.tag.deleteMany.mockResolvedValueOnce({ count: 1 })
 
       const result = await TagService.deleteOrphanedTags([1, 2, 3])
       expect(result).toStrictEqual({ count: 1 })
     })
 
     it('should filter by tags that have a matching id and no quotes associated', async () => {
-      prismaMock.tag.deleteMany.mockResolvedValue({ count: 1 })
+      prismaMock.tag.deleteMany.mockResolvedValueOnce({ count: 1 })
       await TagService.deleteOrphanedTags([1, 2, 3])
 
       expect(prismaMock.tag.deleteMany).toHaveBeenCalledWith({

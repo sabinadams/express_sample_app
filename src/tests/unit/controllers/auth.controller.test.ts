@@ -20,7 +20,7 @@ vi.mock('lib/utility-classes', () => ({
 describe('AuthController', () => {
   let request: Request
   let response: Response
-  let next = vi.fn()
+  const next = vi.fn()
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -28,18 +28,17 @@ describe('AuthController', () => {
       status: vi.fn().mockReturnThis(),
       json: vi.fn()
     } as unknown as Response
-    request = {} as Request
-    next = vi.fn()
+    request = {
+      body: {
+        username: 'testusername',
+        password: 'testpassword'
+      }
+    } as Request
   })
 
   describe('signup', () => {
     it('should throw a validation error if a user already exists with username', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
@@ -57,51 +56,36 @@ describe('AuthController', () => {
     })
 
     it('should create a new user if username not taken', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
-      vi.mocked(AuthService.createUser).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce(null)
+      vi.mocked(AuthService.createUser).mockResolvedValueOnce({
         id: 1,
         username: 'testusername'
       })
-      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValueOnce('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(AuthService.createUser).toHaveBeenCalledWith(request.body)
     })
 
     it('should create a session token for the new user', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
-      vi.mocked(AuthService.createUser).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce(null)
+      vi.mocked(AuthService.createUser).mockResolvedValueOnce({
         id: 1,
         username: 'testusername'
       })
-      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValueOnce('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(AuthService.generateJWT).toHaveBeenCalledWith(1)
     })
 
     it('should respond to the request with a message, the user, and the token', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
-      vi.mocked(AuthService.createUser).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce(null)
+      vi.mocked(AuthService.createUser).mockResolvedValueOnce({
         id: 1,
         username: 'testusername'
       })
-      vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
+      vi.mocked(AuthService.generateJWT).mockReturnValueOnce('testtoken')
       await AuthController.signup(request, response, next)
 
       expect(response.status).toHaveBeenCalledWith(200)
@@ -118,12 +102,7 @@ describe('AuthController', () => {
 
   describe('signin', () => {
     it('should throw a validation error if no user exists with username', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue(null)
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce(null)
       await AuthController.signin(request, response, next)
       expect(next).toHaveBeenCalled()
       expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
@@ -132,17 +111,12 @@ describe('AuthController', () => {
     })
 
     it('should throw a validation error if the password is incorrect', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.mocked(AuthService.comparePasswords).mockReturnValue(false)
+      vi.mocked(AuthService.comparePasswords).mockReturnValueOnce(false)
 
       await AuthController.signin(request, response, next)
 
@@ -157,17 +131,12 @@ describe('AuthController', () => {
     })
 
     it('should create a session token for the successfully logged-in user', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.mocked(AuthService.comparePasswords).mockReturnValue(true)
+      vi.mocked(AuthService.comparePasswords).mockReturnValueOnce(true)
       vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
 
       await AuthController.signin(request, response, next)
@@ -176,17 +145,12 @@ describe('AuthController', () => {
     })
 
     it('should respond to the request with a message, the username, and the token', async () => {
-      request.body = {
-        username: 'testusername',
-        password: 'testpassword'
-      }
-
-      vi.mocked(AuthService.findUserByUsername).mockResolvedValue({
+      vi.mocked(AuthService.findUserByUsername).mockResolvedValueOnce({
         id: 1,
         username: 'testusername',
         password: 'hashedpass'
       })
-      vi.mocked(AuthService.comparePasswords).mockReturnValue(true)
+      vi.mocked(AuthService.comparePasswords).mockReturnValueOnce(true)
       vi.mocked(AuthService.generateJWT).mockReturnValue('testtoken')
 
       await AuthController.signin(request, response, next)

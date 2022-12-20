@@ -26,7 +26,7 @@ describe('auth.service', () => {
 
   describe('createUser', async () => {
     it('should create and return the user', async () => {
-      prismaMock.user.create.mockResolvedValue({
+      prismaMock.user.create.mockResolvedValueOnce({
         id: 1,
         username: 'testname'
       } as User)
@@ -45,7 +45,7 @@ describe('auth.service', () => {
     })
 
     it('should encrypt the password', async () => {
-      prismaMock.user.create.mockResolvedValue({
+      prismaMock.user.create.mockResolvedValueOnce({
         id: 1,
         username: 'testname'
       } as User)

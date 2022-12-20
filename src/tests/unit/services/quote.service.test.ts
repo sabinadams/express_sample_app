@@ -11,7 +11,7 @@ describe('quote.service', () => {
 
   describe('createQuote', () => {
     it('should return the new quote', async () => {
-      prismaMock.quote.create.mockResolvedValue({
+      prismaMock.quote.create.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'
@@ -29,7 +29,7 @@ describe('quote.service', () => {
     })
 
     it('should connect a user to the quote', async () => {
-      prismaMock.quote.create.mockResolvedValue({
+      prismaMock.quote.create.mockResolvedValueOnce({
         id: 1,
         userId: 999,
         text: 'test quote'
@@ -47,7 +47,7 @@ describe('quote.service', () => {
     })
 
     it('should connect tags to the quote', async () => {
-      prismaMock.quote.create.mockResolvedValue({
+      prismaMock.quote.create.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'
@@ -67,7 +67,7 @@ describe('quote.service', () => {
 
   describe('getQuotesByUser', () => {
     it('should return quotes for a user', async () => {
-      prismaMock.quote.findMany.mockResolvedValue([
+      prismaMock.quote.findMany.mockResolvedValueOnce([
         {
           id: 1,
           userId: 2,
@@ -89,7 +89,7 @@ describe('quote.service', () => {
     })
 
     it('should filter by userId and include tags', async () => {
-      prismaMock.quote.findMany.mockResolvedValue([
+      prismaMock.quote.findMany.mockResolvedValueOnce([
         {
           id: 1,
           userId: 2,
@@ -108,7 +108,7 @@ describe('quote.service', () => {
 
   describe('getQuoteById', () => {
     it('should return a quote by id', async () => {
-      prismaMock.quote.findUnique.mockResolvedValue({
+      prismaMock.quote.findUnique.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'
@@ -127,7 +127,7 @@ describe('quote.service', () => {
     })
 
     it('should filter by userId and include tags', async () => {
-      prismaMock.quote.findUnique.mockResolvedValue({
+      prismaMock.quote.findUnique.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'
@@ -144,7 +144,7 @@ describe('quote.service', () => {
 
   describe('deleteQuote', () => {
     it('should return the deleted', async () => {
-      prismaMock.quote.delete.mockResolvedValue({
+      prismaMock.quote.delete.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'
@@ -163,7 +163,7 @@ describe('quote.service', () => {
     })
 
     it('should filter by id', async () => {
-      prismaMock.quote.delete.mockResolvedValue({
+      prismaMock.quote.delete.mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'test quote'

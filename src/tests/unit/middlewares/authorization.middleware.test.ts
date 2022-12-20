@@ -17,7 +17,7 @@ vi.mock('services/auth.service', () => ({
 describe('authorization.middleware', () => {
   let request: Request
   let response: Response
-  let next = vi.fn()
+  const next = vi.fn()
   beforeEach(() => {
     vi.restoreAllMocks()
     response = {
@@ -26,7 +26,6 @@ describe('authorization.middleware', () => {
       send: vi.fn()
     } as unknown as Response
     request = {} as Request
-    next = vi.fn()
   })
 
   it('should immediately respond to the request if the method is OPTIONS', async () => {

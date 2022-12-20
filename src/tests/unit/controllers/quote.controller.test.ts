@@ -27,7 +27,7 @@ describe('QuoteController', () => {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   let request: Request<any, any, any, any>
   let response: Response
-  let next = vi.fn()
+  const next = vi.fn()
 
   beforeEach(() => {
     vi.restoreAllMocks()
@@ -36,7 +36,6 @@ describe('QuoteController', () => {
       json: vi.fn()
     } as unknown as Response
     request = {} as Request
-    next = vi.fn()
   })
 
   describe('getAllQuotes', () => {
@@ -57,7 +56,7 @@ describe('QuoteController', () => {
         }
       ]
 
-      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValue(quotes)
+      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValueOnce(quotes)
 
       await QuoteController.getAllQuotes(request, response, next)
 
@@ -66,7 +65,7 @@ describe('QuoteController', () => {
     })
 
     it('should throw an error if no session userId', async () => {
-      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValue([])
+      vi.mocked(QuoteService.getQuotesByUser).mockResolvedValueOnce([])
       expect(
         QuoteController.getAllQuotes(request, response, next)
       ).rejects.toThrowError()
@@ -80,7 +79,7 @@ describe('QuoteController', () => {
         text: 'Hello world',
         tags: [1, 2, 3]
       }
-      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
+      vi.mocked(TagService.upsertTags).mockResolvedValueOnce([1, 2, 3])
       await QuoteController.createQuote(request, response, next)
       expect(TagService.upsertTags).toHaveBeenCalledWith([1, 2, 3])
     })
@@ -91,7 +90,7 @@ describe('QuoteController', () => {
         text: 'Hello world',
         tags: [1, 2, 3]
       }
-      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
+      vi.mocked(TagService.upsertTags).mockResolvedValueOnce([1, 2, 3])
       await QuoteController.createQuote(request, response, next)
       expect(QuoteService.createQuote).toHaveBeenCalledWith(
         'Hello world',
@@ -106,8 +105,8 @@ describe('QuoteController', () => {
         text: 'Hello world',
         tags: [1, 2, 3]
       }
-      vi.mocked(TagService.upsertTags).mockResolvedValue([1, 2, 3])
-      vi.mocked(QuoteService.createQuote).mockResolvedValue({
+      vi.mocked(TagService.upsertTags).mockResolvedValueOnce([1, 2, 3])
+      vi.mocked(QuoteService.createQuote).mockResolvedValueOnce({
         id: 1,
         text: 'Hello world',
         userId: 1
@@ -136,7 +135,7 @@ describe('QuoteController', () => {
         unknown
       >
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue(null)
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce(null)
 
       await QuoteController.deleteQuote(request, response, next)
 
@@ -152,7 +151,7 @@ describe('QuoteController', () => {
         params: { id: 1 }
       } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce({
         id: 1,
         userId: 999,
         text: 'Hello world',
@@ -173,7 +172,7 @@ describe('QuoteController', () => {
         params: { id: 1 }
       } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'Hello world',
@@ -190,7 +189,7 @@ describe('QuoteController', () => {
         params: { id: 1 }
       } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'Hello world',
@@ -211,7 +210,7 @@ describe('QuoteController', () => {
         params: { id: 1 }
       } as Request<{ id: 1 }, unknown, unknown, unknown>
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue({
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce({
         id: 1,
         userId: 2,
         text: 'Hello world',
@@ -236,8 +235,8 @@ describe('QuoteController', () => {
         tags: []
       }
 
-      vi.mocked(QuoteService.getQuoteById).mockResolvedValue(mockedQuote)
-      vi.mocked(QuoteService.deleteQuote).mockResolvedValue(mockedQuote)
+      vi.mocked(QuoteService.getQuoteById).mockResolvedValueOnce(mockedQuote)
+      vi.mocked(QuoteService.deleteQuote).mockResolvedValueOnce(mockedQuote)
 
       await QuoteController.deleteQuote(request, response, next)
 

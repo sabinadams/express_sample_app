@@ -13,7 +13,7 @@ vi.mock('lib/utility-classes', () => ({
 describe('validate.middleware', () => {
   let request: Request
   let response: Response
-  let next = vi.fn()
+  const next = vi.fn()
 
   beforeEach(() => {
     vi.restoreAllMocks()
@@ -22,7 +22,6 @@ describe('validate.middleware', () => {
       json: vi.fn()
     } as unknown as Response
     request = {} as Request
-    next = vi.fn()
   })
 
   it('should throw an error when given an invalid request', async () => {
