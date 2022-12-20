@@ -2,7 +2,7 @@ import type { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import prismaMock from 'lib/__mocks__/prisma'
 import * as AuthService from 'services/auth.service'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/prisma')
 vi.mock('jsonwebtoken', () => ({
@@ -17,19 +17,13 @@ vi.mock('bcrypt', () => ({
   }
 }))
 
-const env = process.env
-
-beforeEach(() => {
-  vi.restoreAllMocks()
-  process.env = { ...env }
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-  process.env = { ...env }
-})
-
 describe('auth.service', () => {
+  const env = process.env
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    process.env = { ...env }
+  })
+
   describe('createUser', async () => {
     it('should create and return the user', async () => {
       prismaMock.user.create.mockResolvedValue({

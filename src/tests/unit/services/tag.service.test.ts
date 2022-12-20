@@ -1,22 +1,17 @@
 import prismaMock from 'lib/__mocks__/prisma'
 import randomColor from 'randomcolor'
 import * as TagService from 'services/tag.service'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/prisma')
 vi.mock('randomcolor', () => ({
   default: vi.fn(() => '#ffffff')
 }))
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('tag.service', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
   describe('upsertTags', () => {
     it('should return a list of tagIds', async () => {
       prismaMock.$transaction.mockResolvedValue([1, 2, 3])

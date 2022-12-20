@@ -3,7 +3,7 @@ import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import * as QuoteService from 'services/quote.service'
 import * as TagService from 'services/tag.service'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('services/quote.service', () => ({
   getQuotesByUser: vi.fn(),
@@ -23,14 +23,6 @@ vi.mock('lib/utility-classes', () => ({
   }
 }))
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('QuoteController', () => {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   let request: Request<any, any, any, any>
@@ -38,6 +30,7 @@ describe('QuoteController', () => {
   let next = vi.fn()
 
   beforeEach(() => {
+    vi.restoreAllMocks()
     response = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn()

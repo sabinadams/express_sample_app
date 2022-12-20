@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import validate from 'middlewares/validate.middleware'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 
 vi.mock('lib/utility-classes', () => ({
@@ -10,20 +10,13 @@ vi.mock('lib/utility-classes', () => ({
   }
 }))
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('validate.middleware', () => {
   let request: Request
   let response: Response
   let next = vi.fn()
 
   beforeEach(() => {
+    vi.restoreAllMocks()
     response = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn()

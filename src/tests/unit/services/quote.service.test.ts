@@ -1,10 +1,14 @@
 import prismaMock from 'lib/__mocks__/prisma'
 import * as QuoteService from 'services/quote.service'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/prisma')
 
 describe('quote.service', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe('createQuote', () => {
     it('should return the new quote', async () => {
       prismaMock.quote.create.mockResolvedValue({

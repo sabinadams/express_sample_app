@@ -2,7 +2,7 @@ import * as AuthController from 'controllers/auth.controller'
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import * as AuthService from 'services/auth.service'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('services/auth.service', () => ({
   findUserByUsername: vi.fn(),
@@ -17,20 +17,13 @@ vi.mock('lib/utility-classes', () => ({
   }
 }))
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
-
 describe('AuthController', () => {
   let request: Request
   let response: Response
   let next = vi.fn()
 
   beforeEach(() => {
+    vi.resetAllMocks()
     response = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn()

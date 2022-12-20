@@ -1,21 +1,14 @@
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import handler from 'middlewares/error-handler.middleware'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
-afterEach(() => {
-  vi.restoreAllMocks()
-})
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('error-handler.middleware', () => {
   let request: Request
   let response: Response
 
   beforeEach(() => {
+    vi.restoreAllMocks()
     response = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn()
