@@ -1,12 +1,17 @@
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import authorization from 'middlewares/authorization.middleware'
+import * as AuthService from 'services/auth.service'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/utility-classes', () => ({
   AppError: class {
     constructor(public type: string, public message: string) {}
   }
+}))
+
+vi.mock('services/auth.service', () => ({
+  validateJWT: vi.fn()
 }))
 
 beforeEach(() => {
@@ -52,7 +57,33 @@ describe('authorization.middleware', () => {
     expect(next.mock.calls[0][0].type).toBe('unauthorized')
   })
 
-  it('should throw an error if invalid `authorization` header passed', async () => {
+  it('should throw an error if Bearer indicator not passed', async () => {
+    request['headers'] = {
+      authorization: 'Beaer token'
+    }
+
+    await authorization(request, response, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
+    expect(next.mock.calls[0][0].message).toBe('Invalid access token.')
+    expect(next.mock.calls[0][0].type).toBe('unauthorized')
+  })
+
+  it('should throw an error if missing token', async () => {
+    request['headers'] = {
+      authorization: 'Bearer'
+    }
+
+    await authorization(request, response, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
+    expect(next.mock.calls[0][0].message).toBe('Invalid access token.')
+    expect(next.mock.calls[0][0].type).toBe('unauthorized')
+  })
+
+  it('should throw an error if blank token', async () => {
     request['headers'] = {
       authorization: 'Bearer '
     }
@@ -63,5 +94,36 @@ describe('authorization.middleware', () => {
     expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
     expect(next.mock.calls[0][0].message).toBe('Invalid access token.')
     expect(next.mock.calls[0][0].type).toBe('unauthorized')
+  })
+
+  it('should set session token if success', async () => {
+    request['headers'] = {
+      authorization: 'Bearer token'
+    }
+
+    vi.mocked(AuthService.validateJWT).mockReturnValue(999)
+
+    await authorization(request, response, next)
+
+    expect(AuthService.validateJWT).toHaveBeenCalledWith('token')
+    expect(request.session.userId).toBe(999)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it('should throw an error if there is a problem validating the token', async () => {
+    request['headers'] = {
+      authorization: 'Bearer token'
+    }
+
+    vi.mocked(AuthService.validateJWT).mockImplementation(() => {
+      throw new Error('some error')
+    })
+
+    await authorization(request, response, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(next.mock.calls[0][0]).toBeInstanceOf(AppError)
+    expect(next.mock.calls[0][0].message).toBe('Invalid access token.')
+    expect(next.mock.calls[0][0].type).toBe('validation')
   })
 })
