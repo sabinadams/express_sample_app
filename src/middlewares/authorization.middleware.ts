@@ -16,7 +16,11 @@ export default (
     )
   }
 
-  const token = request.headers.authorization.split('Bearer')[1].trim()
+  if (!request.headers.authorization.startsWith('Bearer ')) {
+    return next(new AppError('unauthorized', 'Invalid access token.'))
+  }
+
+  const token = request.headers.authorization.split(' ')[1].trim()
 
   if (!token) {
     return next(new AppError('unauthorized', 'Invalid access token.'))

@@ -54,7 +54,7 @@ describe('authorization.middleware', () => {
 
   it('should throw an error if invalid `authorization` header passed', async () => {
     request['headers'] = {
-      authorization: 'Bearer'
+      authorization: 'Bearer '
     }
 
     await authorization(request, response, next)
