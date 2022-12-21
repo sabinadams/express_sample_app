@@ -107,25 +107,4 @@ describe('tags.service', () => {
       expect(prismaMock.$transaction).toHaveReturnedWith([])
     })
   })
-
-  describe('deleteOrphanedTags', () => {
-    it('should delete tags that are not associated with any quotes', async () => {
-      prismaMock.tag.deleteMany.mockResolvedValueOnce({ count: 1 })
-
-      const result = await TagService.deleteOrphanedTags([1, 2, 3])
-      expect(result).toStrictEqual({ count: 1 })
-    })
-
-    it('should filter by tags that have a matching id and no quotes associated', async () => {
-      prismaMock.tag.deleteMany.mockResolvedValueOnce({ count: 1 })
-      await TagService.deleteOrphanedTags([1, 2, 3])
-
-      expect(prismaMock.tag.deleteMany).toHaveBeenCalledWith({
-        where: {
-          quotes: { none: {} },
-          id: { in: [1, 2, 3] }
-        }
-      })
-    })
-  })
 })
