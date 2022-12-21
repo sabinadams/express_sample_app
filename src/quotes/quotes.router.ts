@@ -1,10 +1,7 @@
-import * as QuoteController from 'controllers/quote.controller'
+import * as QuoteController from './quotes.controller'
+import { CreateQuoteSchema, DeleteQuoteSchema } from './quotes.schemas'
 import { Router } from 'express'
-import validate from 'middlewares/validate.middleware'
-import {
-  CreateQuoteSchema,
-  DeleteQuoteSchema
-} from 'validation/request.schemas'
+import { validate } from 'lib/middlewares'
 
 const router = Router()
 
