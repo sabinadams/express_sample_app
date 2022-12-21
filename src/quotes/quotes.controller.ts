@@ -1,11 +1,8 @@
+import type { CreateQuoteSchema, DeleteQuoteSchema } from './quotes.schemas'
+import * as QuoteService from './quotes.service'
+import * as TagService from './tags.service'
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
-import * as QuoteService from 'services/quote.service'
-import * as TagService from 'services/tag.service'
-import type {
-  CreateQuoteSchema,
-  DeleteQuoteSchema
-} from 'validation/request.schemas'
 
 export const getAllQuotes: RequestHandler = async (req, res) => {
   const quotes = await QuoteService.getQuotesByUser(req.session.userId)

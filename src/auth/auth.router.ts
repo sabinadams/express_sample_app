@@ -1,7 +1,7 @@
-import * as AuthController from 'controllers/auth.controller'
+import * as AuthController from './auth.controller'
+import { SigninSchema, SignupSchema } from './auth.schemas'
 import { Router } from 'express'
-import validate from 'middlewares/validate.middleware'
-import { SigninSchema, SignupSchema } from 'validation/request.schemas'
+import { validate } from 'lib/middlewares'
 
 const router = Router()
 

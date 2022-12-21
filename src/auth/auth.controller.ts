@@ -1,7 +1,7 @@
+import type { SigninSchema, SignupSchema } from './auth.schemas'
+import * as AuthService from './auth.service'
 import type { Request, RequestHandler } from 'express'
 import { AppError } from 'lib/utility-classes'
-import * as AuthService from 'services/auth.service'
-import type { SigninSchema, SignupSchema } from 'validation/request.schemas'
 
 export const signup: RequestHandler = async (
   req: Request<unknown, unknown, SignupSchema>,
