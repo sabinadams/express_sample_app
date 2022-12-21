@@ -1,12 +1,14 @@
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  root: 'src',
+  test: {
+    include: ['src/**/*.test.ts']
+  },
   resolve: {
     alias: {
-      auth: '/auth',
-      quotes: '/quotes',
-      lib: '/lib'
+      auth: '/src/auth',
+      quotes: '/src/quotes',
+      lib: '/src/lib'
     }
   }
 })
