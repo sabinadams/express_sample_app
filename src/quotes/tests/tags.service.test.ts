@@ -1,6 +1,6 @@
+import * as TagService from '../tags.service'
 import prismaMock from 'lib/__mocks__/prisma'
 import randomColor from 'randomcolor'
-import * as TagService from 'services/tag.service'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/prisma')
@@ -8,7 +8,7 @@ vi.mock('randomcolor', () => ({
   default: vi.fn(() => '#ffffff')
 }))
 
-describe('tag.service', () => {
+describe('tags.service', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
   })

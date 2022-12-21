@@ -1,10 +1,10 @@
-import * as AuthController from 'controllers/auth.controller'
+import * as AuthController from '../auth.controller'
+import * as AuthService from '../auth.service'
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
-import * as AuthService from 'services/auth.service'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('services/auth.service', () => ({
+vi.mock('auth/auth.service', () => ({
   findUserByUsername: vi.fn(),
   comparePasswords: vi.fn(),
   generateJWT: vi.fn(),
@@ -17,7 +17,7 @@ vi.mock('lib/utility-classes', () => ({
   }
 }))
 
-describe('AuthController', () => {
+describe('auth.controller', () => {
   let request: Request
   let response: Response
   const next = vi.fn()

@@ -4,12 +4,9 @@ export default defineConfig({
   root: 'src',
   resolve: {
     alias: {
-      lib: '/lib',
-      services: '/services',
-      middlewares: '/middlewares',
-      controllers: '/controllers',
-      routes: '/routes',
-      validation: '/validation'
+      auth: '/auth',
+      quotes: '/quotes',
+      lib: '/lib'
     }
   }
 })

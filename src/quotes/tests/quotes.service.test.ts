@@ -1,10 +1,10 @@
+import * as QuoteService from '../quotes.service'
 import prismaMock from 'lib/__mocks__/prisma'
-import * as QuoteService from 'services/quote.service'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('lib/prisma')
 
-describe('quote.service', () => {
+describe('quotes.service', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
   })

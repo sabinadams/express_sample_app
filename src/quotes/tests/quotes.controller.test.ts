@@ -1,18 +1,18 @@
-import * as QuoteController from 'controllers/quote.controller'
+import * as QuoteController from '../quotes.controller'
+import * as QuoteService from '../quotes.service'
+import * as TagService from '../tags.service'
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
-import * as QuoteService from 'services/quote.service'
-import * as TagService from 'services/tag.service'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('services/quote.service', () => ({
+vi.mock('quotes/quotes.service', () => ({
   getQuotesByUser: vi.fn(),
   createQuote: vi.fn(),
   getQuoteById: vi.fn(),
   deleteQuote: vi.fn()
 }))
 
-vi.mock('services/tag.service', () => ({
+vi.mock('quotes/tags.service', () => ({
   deleteOrphanedTags: vi.fn(),
   upsertTags: vi.fn()
 }))
@@ -23,7 +23,7 @@ vi.mock('lib/utility-classes', () => ({
   }
 }))
 
-describe('QuoteController', () => {
+describe('quotes.controller', () => {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   let request: Request<any, any, any, any>
   let response: Response
