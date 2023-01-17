@@ -1,4 +1,4 @@
-import * as TagService from '../tags.service'
+import * as TagService from './tags.service'
 import prismaMock from 'lib/__mocks__/prisma'
 import randomColor from 'randomcolor'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

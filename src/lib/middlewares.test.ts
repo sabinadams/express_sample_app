@@ -1,5 +1,5 @@
-import { authorization, errorHandler, validate } from '../middlewares'
-import { AppError } from '../utility-classes'
+import { authorization, errorHandler, validate } from './middlewares'
+import { AppError } from './utility-classes'
 import * as AuthService from 'auth/auth.service'
 import type { Request, Response } from 'express'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

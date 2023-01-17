@@ -1,5 +1,5 @@
-import * as AuthController from '../auth.controller'
-import * as AuthService from '../auth.service'
+import * as AuthController from './auth.controller'
+import * as AuthService from './auth.service'
 import type { Request, Response } from 'express'
 import { AppError } from 'lib/utility-classes'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

@@ -11,8 +11,8 @@
     "checks": "npm run format:check && npm run lint:check",
     "checks:fix": "npm run format && npm run lint",
     "prepare": "husky install",
-    "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:unit": "vitest -c ./vitest.config.unit.ts",
+    "test:unit:ui": "vitest -c ./vitest.config.unit.ts --ui"
   },
   "dependencies": {
     "@prisma/client": "4.7.1",

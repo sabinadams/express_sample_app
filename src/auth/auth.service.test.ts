@@ -1,4 +1,4 @@
-import * as AuthService from '../auth.service'
+import * as AuthService from './auth.service'
 import type { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import prismaMock from 'lib/__mocks__/prisma'

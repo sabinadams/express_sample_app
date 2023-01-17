@@ -1,4 +1,4 @@
-import { AppError } from '../utility-classes'
+import { AppError } from './utility-classes'
 import { describe, expect, it } from 'vitest'
 
 describe('utility-classes', () => {
