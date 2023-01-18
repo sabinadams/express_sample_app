@@ -13,8 +13,8 @@
     "prepare": "husky install",
     "test:unit": "vitest -c ./vitest.config.unit.ts",
     "test:unit:ui": "vitest -c ./vitest.config.unit.ts --ui",
-    "test:int": "vitest -c ./vitest.config.integration.ts",
-    "test:int:ui": "vitest -c ./vitest.config.integration.ts --ui"
+    "test:int": "./scripts/run-integration.sh",
+    "test:int:ui": "./scripts/run-integration.sh --ui"
   },
   "dependencies": {
     "@prisma/client": "4.7.1",
@@ -31,6 +31,7 @@
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "18.11.12",
     "@types/randomcolor": "^0.5.7",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.29.0",
@@ -39,6 +40,7 @@
     "husky": "^8.0.2",
     "prettier": "2.8.1",
     "prisma": "4.7.1",
+    "supertest": "^6.3.3",
     "ts-node": "10.9.1",
     "tsconfig-paths": "^4.1.1",
     "typescript": "4.9.4",
