@@ -23,6 +23,7 @@
   "peacock.color": "#24f59c",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.*.ts",
     "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.d.ts.map",
     "*.jsx": "${capture}.js",
     "*.tsx": "${capture}.ts",
@@ -37,7 +38,6 @@
     ".prettierrc": ".prettierignore",
     ".gitignore": ".git-blame-ignore-revs",
     "next.config.js": "next-env.d.ts",
-    "Cargo.toml": "Cargo.lock",
-    "*.ts": "${capture}.test.ts"
+    "Cargo.toml": "Cargo.lock"
   }
 }
