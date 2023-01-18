@@ -36,10 +36,20 @@ export const authorization = (
   }
 }
 
-export const errorHandler = (error: Error, _: Request, response: Response) => {
+export const errorHandler = (
+  error: Error,
+  _: Request,
+  response: Response,
+  _next: NextFunction // eslint-disable-line no-unused-vars
+) => {
   response
     .status('statusCode' in error ? (error.statusCode as number) : 500)
-    .json({ message: 'Oops! Something wonky happened...' })
+    .json({
+      message:
+        error instanceof AppError
+          ? error.message
+          : 'Oops! Something wonky happened...'
+    })
 }
 
 export const validate =

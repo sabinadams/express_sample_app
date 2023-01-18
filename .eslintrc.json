@@ -19,7 +19,7 @@
     "prefer-arrow/prefer-arrow-functions": "warn",
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-unused-vars": [
-      "warn",
+      "error",
       { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
     ],
     "no-unused-vars": "error"
