@@ -1,14 +1,12 @@
 import prisma from './helpers/prisma'
 import resetDb from './helpers/reset-db'
-// import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import createServer from 'lib/createServer'
 import request from 'supertest'
 import { afterEach, describe, expect, it } from 'vitest'
 
-const app = createServer().listen(3001, () => {
-  console.log('Server listening')
-})
+const app = createServer().listen(3001)
 
 describe('/auth', async () => {
   afterEach(async () => {
@@ -58,10 +56,102 @@ describe('/auth', async () => {
       expect(body).toHaveProperty('token')
       expect(jwt.verify(body.token, process.env.API_SECRET as string))
     })
+    it('should return a validation error when invalid request body provided', async () => {
+      const { body, status } = await request(app).post('/auth/signup').send({
+        email: 'test@prisma.io', // should be username
+        password: 'wrongpassword'
+      })
+
+      expect(status).toBe(400)
+      expect(body.message).toBe(
+        `Invalid or missing input provided for: username`
+      )
+    })
   })
+
   describe('POST /auth/signin', () => {
-    it('should create a new user 2', async () => {
-      expect(1).toBe(1)
+    it('should sign in an existing user with valid credentials', async () => {
+      await prisma.user.create({
+        data: {
+          username: 'testusername',
+          password: bcrypt.hashSync('testpassword', 8)
+        }
+      })
+
+      const { status } = await request(app).post('/auth/signin').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+
+      expect(status).toBe(200)
+    })
+    it("should return only a user's username", async () => {
+      await prisma.user.create({
+        data: {
+          username: 'testusername',
+          password: bcrypt.hashSync('testpassword', 8)
+        }
+      })
+
+      const { body } = await request(app).post('/auth/signin').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+
+      expect(body.username).toBe('testusername')
+      expect(body).not.toHaveProperty('password')
+    })
+    it('should return a valid session token when successful', async () => {
+      await prisma.user.create({
+        data: {
+          username: 'testusername',
+          password: bcrypt.hashSync('testpassword', 8)
+        }
+      })
+
+      const { body } = await request(app).post('/auth/signin').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+
+      expect(body).toHaveProperty('token')
+      expect(jwt.verify(body.token, process.env.API_SECRET as string))
+    })
+    it('should return a 400 when given invalid credentials', async () => {
+      await prisma.user.create({
+        data: {
+          username: 'testusername',
+          password: bcrypt.hashSync('testpassword', 8)
+        }
+      })
+
+      const { body, status } = await request(app).post('/auth/signin').send({
+        username: 'testusername',
+        password: 'wrongpassword'
+      })
+
+      expect(status).toBe(400)
+      expect(body).not.toHaveProperty('token')
+    })
+    it('should return a 400 when user not found', async () => {
+      const { body, status } = await request(app).post('/auth/signin').send({
+        username: 'testusername',
+        password: 'wrongpassword'
+      })
+
+      expect(status).toBe(400)
+      expect(body).not.toHaveProperty('token')
+    })
+    it('should return a validation error when invalid request body provided', async () => {
+      const { body, status } = await request(app).post('/auth/signin').send({
+        email: 'test@prisma.io', // should be username
+        password: 'wrongpassword'
+      })
+
+      expect(status).toBe(400)
+      expect(body.message).toBe(
+        `Invalid or missing input provided for: username`
+      )
     })
   })
 })
