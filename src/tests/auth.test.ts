@@ -1,17 +1,10 @@
 import prisma from './helpers/prisma'
-import resetDb from './helpers/reset-db'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import createServer from 'lib/createServer'
 import request from 'supertest'
-import { afterEach, describe, expect, it } from 'vitest'
-
-const app = createServer().listen(3001)
+import { describe, expect, it } from 'vitest'
 
 describe('/auth', async () => {
-  afterEach(async () => {
-    await resetDb()
-  })
   describe('POST /auth/signup', () => {
     it('should create a new user', async () => {
       const { body, status } = await request(app).post('/auth/signup').send({
