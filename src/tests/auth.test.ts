@@ -1,5 +1,7 @@
+import prisma from './helpers/prisma'
 import resetDb from './helpers/reset-db'
 // import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 import createServer from 'lib/createServer'
 import request from 'supertest'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -14,15 +16,50 @@ describe('/auth', async () => {
   })
   describe('POST /auth/signup', () => {
     it('should create a new user', async () => {
-      const response = await request(app).post('/auth/signup').send({
+      const { body, status } = await request(app).post('/auth/signup').send({
         username: 'testusername',
         password: 'testpassword'
       })
 
-      console.log(response)
+      const newUser = await prisma.user.findFirst()
+
+      expect(status).toBe(200)
+      expect(newUser).not.toBeNull()
+      expect(body).toHaveProperty('user')
+      expect(body.user.username).toBe('testusername')
+      expect(body.user.id).toBe(newUser?.id)
+    })
+
+    it('should return a 400 if the username already exists', async () => {
+      await prisma.user.create({
+        data: {
+          username: 'testusername',
+          password: 'somepassword'
+        }
+      })
+
+      const { status, body } = await request(app).post('/auth/signup').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+
+      const count = await prisma.user.count()
+
+      expect(count).toBe(1)
+      expect(status).toBe(400)
+      expect(body).not.toHaveProperty('user')
+    })
+
+    it('should return a valid session token', async () => {
+      const { body } = await request(app).post('/auth/signup').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+      expect(body).toHaveProperty('token')
+      expect(jwt.verify(body.token, process.env.API_SECRET as string))
     })
   })
-  describe('/auth/signin', () => {
+  describe('POST /auth/signin', () => {
     it('should create a new user 2', async () => {
       expect(1).toBe(1)
     })
