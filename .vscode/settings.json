@@ -20,5 +20,24 @@
     "titleBar.inactiveBackground": "#24f59c99",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.color": "#24f59c"
+  "peacock.color": "#24f59c",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.d.ts.map",
+    "*.jsx": "${capture}.js",
+    "*.tsx": "${capture}.ts",
+    "tsconfig.json": "tsconfig.*.json",
+    "package.json": "package-lock.json, yarn.lock, .nvmrc, .npmrc, .npmignore, pnpm-lock.yaml, pnpm-workspace.yaml, .node-version",
+    "remix.config.js": "remix.env.d.ts",
+    "Dockerfile": ".dockerignore",
+    "go.mod": "go.sum",
+    ".env": ".env.*",
+    ".eslintrc": ".eslintignore",
+    "firebase.json": ".firebaserc,firestore.*",
+    ".prettierrc": ".prettierignore",
+    ".gitignore": ".git-blame-ignore-revs",
+    "next.config.js": "next-env.d.ts",
+    "Cargo.toml": "Cargo.lock",
+    "*.ts": "${capture}.test.ts"
+  }
 }

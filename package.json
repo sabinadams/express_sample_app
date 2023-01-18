@@ -12,7 +12,9 @@
     "checks:fix": "npm run format && npm run lint",
     "prepare": "husky install",
     "test:unit": "vitest -c ./vitest.config.unit.ts",
-    "test:unit:ui": "vitest -c ./vitest.config.unit.ts --ui"
+    "test:unit:ui": "vitest -c ./vitest.config.unit.ts --ui",
+    "test:int": "vitest -c ./vitest.config.integration.ts",
+    "test:int:ui": "vitest -c ./vitest.config.integration.ts --ui"
   },
   "dependencies": {
     "@prisma/client": "4.7.1",
