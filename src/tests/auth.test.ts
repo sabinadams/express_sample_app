@@ -1,6 +1,7 @@
 import prisma from './helpers/prisma'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import app from 'lib/createServer'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 

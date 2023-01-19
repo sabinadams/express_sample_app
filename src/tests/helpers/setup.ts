@@ -1,13 +1,6 @@
 import resetDb from './reset-db'
-import createServer from 'lib/createServer'
-import { afterAll, afterEach } from 'vitest'
+import { beforeEach } from 'vitest'
 
-afterEach(async () => {
+beforeEach(async () => {
   await resetDb()
-})
-
-const app = createServer().listen(3001)
-
-afterAll(() => {
-  app.close()
 })
