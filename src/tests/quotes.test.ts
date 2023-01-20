@@ -176,12 +176,9 @@ describe('/quotes', async () => {
   })
 
   describe('[DELETE] /quotes/:id', () => {
-    // let user: User
+    let user: User
     beforeEach(async () => {
-      await prisma.user.create({
-        include: {
-          quotes: true
-        },
+      user = await prisma.user.create({
         data: {
           username: 'test',
           password: bcrypt.hashSync('test', 8)
@@ -198,13 +195,104 @@ describe('/quotes', async () => {
         .delete('/quotes/9999')
         .set({ Authorization: `Bearer ${signinResponse.body.token}` })
 
-      console.log(status, body)
-
       expect(status).toBe(400)
       expect(body.message).toBe('Quote not found.')
     })
-    it('should return a 401 the signed-in user is not the owner of the quote')
-    it('should delete the quote')
-    it('should clear orphaned tags')
+    it('should return a 401 the signed-in user is not the owner of the quote', async () => {
+      // create a second user with only 1 quote
+      const user2 = await prisma.user.create({
+        include: { quotes: true },
+        data: {
+          username: 'test2',
+          password: bcrypt.hashSync('test', 8),
+          quotes: {
+            create: {
+              text: 'test quote'
+            }
+          }
+        }
+      })
+
+      const signinResponse = await request(app).post('/auth/signin').send({
+        username: 'test',
+        password: 'test'
+      })
+
+      const { status, body } = await request(app)
+        .delete(`/quotes/${user2.quotes[0].id}`)
+        .set({ Authorization: `Bearer ${signinResponse.body.token}` })
+
+      expect(status).toBe(401)
+      expect(body.message).toBe('You are not authorized to delete this quote.')
+    })
+    it('should delete the quote', async () => {
+      const signinResponse = await request(app).post('/auth/signin').send({
+        username: 'test',
+        password: 'test'
+      })
+
+      const quote = await prisma.quote.create({
+        data: {
+          text: 'test quote',
+          user: { connect: { id: user.id } }
+        }
+      })
+
+      const { status, body } = await request(app)
+        .delete(`/quotes/${quote.id}`)
+        .set({ Authorization: `Bearer ${signinResponse.body.token}` })
+
+      const count = await prisma.quote.count()
+
+      expect(status).toBe(200)
+      expect(count).toBe(0)
+      expect(body.quote.id).toBe(quote.id)
+    })
+    it('should clear orphaned tags', async () => {
+      const quote1 = await prisma.quote.create({
+        data: {
+          text: 'test quote 1',
+          user: { connect: { id: user.id } }
+        }
+      })
+      const quote2 = await prisma.quote.create({
+        data: {
+          text: 'test quote 2',
+          user: { connect: { id: user.id } }
+        }
+      })
+
+      await prisma.tag.create({
+        data: {
+          name: 'tag1',
+          color: '#000000',
+          quotes: {
+            connect: [{ id: quote1.id }, { id: quote2.id }]
+          }
+        }
+      })
+      await prisma.tag.create({
+        data: {
+          name: 'tag2',
+          color: '#000000',
+          quotes: {
+            connect: [{ id: quote1.id }]
+          }
+        }
+      })
+
+      const signinResponse = await request(app).post('/auth/signin').send({
+        username: 'test',
+        password: 'test'
+      })
+
+      await request(app)
+        .delete(`/quotes/${quote1.id}`)
+        .set({ Authorization: `Bearer ${signinResponse.body.token}` })
+
+      const count = await prisma.tag.count()
+
+      expect(count).toBe(1)
+    })
   })
 })
