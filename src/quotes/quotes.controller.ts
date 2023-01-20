@@ -34,8 +34,8 @@ export const deleteQuote: RequestHandler<DeleteQuoteSchema> = async (
   next: NextFunction
 ) => {
   const { id } = req.params
-
-  const quote = await QuoteService.getQuoteById(id)
+  const quoteId = parseInt(id)
+  const quote = await QuoteService.getQuoteById(quoteId)
 
   if (!quote) {
     return next(new AppError('validation', 'Quote not found.'))
@@ -50,7 +50,7 @@ export const deleteQuote: RequestHandler<DeleteQuoteSchema> = async (
     )
   }
 
-  const deleted = await QuoteService.deleteQuote(id)
+  const deleted = await QuoteService.deleteQuote(quoteId)
 
   if (quote.tags.length) {
     await TagService.deleteOrphanedTags(quote.tags.map(tag => tag.id))
