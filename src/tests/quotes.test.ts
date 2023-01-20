@@ -176,6 +176,35 @@ describe('/quotes', async () => {
   })
 
   describe('[DELETE] /quotes/:id', () => {
-    // empty
+    // let user: User
+    beforeEach(async () => {
+      await prisma.user.create({
+        include: {
+          quotes: true
+        },
+        data: {
+          username: 'test',
+          password: bcrypt.hashSync('test', 8)
+        }
+      })
+    })
+    it('should return a 400 if no quote is associated with the given id', async () => {
+      const signinResponse = await request(app).post('/auth/signin').send({
+        username: 'test',
+        password: 'test'
+      })
+
+      const { status, body } = await request(app)
+        .delete('/quotes/9999')
+        .set({ Authorization: `Bearer ${signinResponse.body.token}` })
+
+      console.log(status, body)
+
+      expect(status).toBe(400)
+      expect(body.message).toBe('Quote not found.')
+    })
+    it('should return a 401 the signed-in user is not the owner of the quote')
+    it('should delete the quote')
+    it('should clear orphaned tags')
   })
 })
