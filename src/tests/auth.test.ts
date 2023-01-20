@@ -6,7 +6,7 @@ import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 
 describe('/auth', async () => {
-  describe('POST /auth/signup', () => {
+  describe('[POST] /auth/signup', () => {
     it('should create a new user', async () => {
       const { body, status } = await request(app).post('/auth/signup').send({
         username: 'testusername',
@@ -63,7 +63,7 @@ describe('/auth', async () => {
     })
   })
 
-  describe('POST /auth/signin', () => {
+  describe('[POST] /auth/signin', () => {
     it('should sign in an existing user with valid credentials', async () => {
       await prisma.user.create({
         data: {
