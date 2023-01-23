@@ -1,11 +1,20 @@
 import prisma from './helpers/prisma'
-import type { Quote, User } from '@prisma/client'
+import type { User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import app from 'lib/createServer'
 import request from 'supertest'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('/quotes', async () => {
+  let user: User
+  beforeEach(async () => {
+    user = await prisma.user.create({
+      data: {
+        username: 'test',
+        password: bcrypt.hashSync('test', 8)
+      }
+    })
+  })
   describe('[*] /quotes', () => {
     it('should return an authentication error if not provided an Authorization header', async () => {
       const { body, status } = await request(app).get('/quotes')
@@ -24,27 +33,17 @@ describe('/quotes', async () => {
   })
 
   describe('[GET] /quotes', () => {
-    let user: User & { quotes: Quote[] }
     beforeEach(async () => {
-      user = await prisma.user.create({
-        include: {
-          quotes: true
-        },
+      await prisma.quote.create({
         data: {
-          username: 'test',
-          password: bcrypt.hashSync('test', 8),
-          quotes: {
-            createMany: {
-              data: [
-                {
-                  text: 'test quote 1'
-                },
-                {
-                  text: 'test quote 2'
-                }
-              ]
-            }
-          }
+          text: 'test quote 1',
+          user: { connect: { id: user.id } }
+        }
+      })
+      await prisma.quote.create({
+        data: {
+          text: 'test quote 2',
+          user: { connect: { id: user.id } }
         }
       })
     })
@@ -86,8 +85,13 @@ describe('/quotes', async () => {
           color: '#000000'
         }
       })
+
+      const userQuotes = await prisma.quote.findMany({
+        where: { userId: user.id }
+      })
+
       await prisma.quote.update({
-        where: { id: user.quotes[0].id },
+        where: { id: userQuotes[0].id },
         data: {
           tags: {
             connect: { id }
@@ -112,18 +116,6 @@ describe('/quotes', async () => {
   })
 
   describe('[POST] /quotes', () => {
-    let user: User
-    beforeEach(async () => {
-      user = await prisma.user.create({
-        include: {
-          quotes: true
-        },
-        data: {
-          username: 'test',
-          password: bcrypt.hashSync('test', 8)
-        }
-      })
-    })
     it('should create a new quote', async () => {
       const signinResponse = await request(app).post('/auth/signin').send({
         username: 'test',
@@ -176,15 +168,6 @@ describe('/quotes', async () => {
   })
 
   describe('[DELETE] /quotes/:id', () => {
-    let user: User
-    beforeEach(async () => {
-      user = await prisma.user.create({
-        data: {
-          username: 'test',
-          password: bcrypt.hashSync('test', 8)
-        }
-      })
-    })
     it('should return a 400 if no quote is associated with the given id', async () => {
       const signinResponse = await request(app).post('/auth/signin').send({
         username: 'test',
