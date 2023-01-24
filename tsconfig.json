@@ -9,7 +9,6 @@
     "lib": ["esnext"],
     "esModuleInterop": true,
     "baseUrl": "src/",
-    "typeRoots": ["@types", "./node_modules/@types"],
-    "types": ["vitest/globals"]
+    "typeRoots": ["@types", "./node_modules/@types"]
   }
 }
