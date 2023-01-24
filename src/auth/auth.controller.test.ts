@@ -158,7 +158,10 @@ describe('auth.controller', () => {
       expect(response.status).toHaveBeenCalledWith(200)
       expect(response.json).toHaveBeenCalledWith({
         message: 'Login successful!',
-        username: 'testusername',
+        user: {
+          username: 'testusername',
+          id: 1
+        },
         token: 'testtoken'
       })
     })
