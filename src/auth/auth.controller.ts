@@ -50,7 +50,10 @@ export const signin: RequestHandler = async (
 
   res.status(200).json({
     message: 'Login successful!',
-    username: existing.username,
+    user: {
+      id: existing.id,
+      username: existing.username
+    },
     token
   })
 }
