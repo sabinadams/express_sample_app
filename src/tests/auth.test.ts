@@ -3,11 +3,11 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import app from 'lib/createServer'
 import request from 'supertest'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
-describe('/auth', async () => {
+describe('/auth', () => {
   describe('[POST] /auth/signup', () => {
-    it('should create a new user', async () => {
+    it('should respond with a `200` status code and user details', async () => {
       const { body, status } = await request(app).post('/auth/signup').send({
         username: 'testusername',
         password: 'testpassword'
@@ -17,12 +17,20 @@ describe('/auth', async () => {
 
       expect(status).toBe(200)
       expect(newUser).not.toBeNull()
-      expect(body).toHaveProperty('user')
-      expect(body.user.username).toBe('testusername')
-      expect(body.user.id).toBe(newUser?.id)
+      expect(body.user).toStrictEqual({
+        username: 'testusername',
+        id: newUser?.id
+      })
     })
-
-    it('should return a 400 if the username already exists', async () => {
+    it('should respond with a valid session token when successful', async () => {
+      const { body } = await request(app).post('/auth/signup').send({
+        username: 'testusername',
+        password: 'testpassword'
+      })
+      expect(body).toHaveProperty('token')
+      expect(jwt.verify(body.token, process.env.API_SECRET as string))
+    })
+    it('should respond with a `400` status code if a user exists with the provided username', async () => {
       await prisma.user.create({
         data: {
           username: 'testusername',
@@ -41,16 +49,7 @@ describe('/auth', async () => {
       expect(status).toBe(400)
       expect(body).not.toHaveProperty('user')
     })
-
-    it('should return a valid session token', async () => {
-      const { body } = await request(app).post('/auth/signup').send({
-        username: 'testusername',
-        password: 'testpassword'
-      })
-      expect(body).toHaveProperty('token')
-      expect(jwt.verify(body.token, process.env.API_SECRET as string))
-    })
-    it('should return a validation error when invalid request body provided', async () => {
+    it('should respond with a `400` status code if an invalid request body is provided', async () => {
       const { body, status } = await request(app).post('/auth/signup').send({
         email: 'test@prisma.io', // should be username
         password: 'wrongpassword'
@@ -64,14 +63,15 @@ describe('/auth', async () => {
   })
 
   describe('[POST] /auth/signin', () => {
-    it('should sign in an existing user with valid credentials', async () => {
+    beforeEach(async () => {
       await prisma.user.create({
         data: {
           username: 'testusername',
           password: bcrypt.hashSync('testpassword', 8)
         }
       })
-
+    })
+    it('should respond with a `200` status code when provided valid credentials', async () => {
       const { status } = await request(app).post('/auth/signin').send({
         username: 'testusername',
         password: 'testpassword'
@@ -79,30 +79,17 @@ describe('/auth', async () => {
 
       expect(status).toBe(200)
     })
-    it("should return only a user's username", async () => {
-      await prisma.user.create({
-        data: {
-          username: 'testusername',
-          password: bcrypt.hashSync('testpassword', 8)
-        }
-      })
-
+    it('should respond with the user details when successful', async () => {
       const { body } = await request(app).post('/auth/signin').send({
         username: 'testusername',
         password: 'testpassword'
       })
-
-      expect(body.username).toBe('testusername')
-      expect(body).not.toHaveProperty('password')
+      const keys = Object.keys(body.user)
+      expect(keys.length).toBe(2)
+      expect(keys).toStrictEqual(['id', 'username'])
+      expect(body.user.username).toBe('testusername')
     })
-    it('should return a valid session token when successful', async () => {
-      await prisma.user.create({
-        data: {
-          username: 'testusername',
-          password: bcrypt.hashSync('testpassword', 8)
-        }
-      })
-
+    it('should respond with a valid session token when successful', async () => {
       const { body } = await request(app).post('/auth/signin').send({
         username: 'testusername',
         password: 'testpassword'
@@ -111,37 +98,27 @@ describe('/auth', async () => {
       expect(body).toHaveProperty('token')
       expect(jwt.verify(body.token, process.env.API_SECRET as string))
     })
-    it('should return a 400 when given invalid credentials', async () => {
-      await prisma.user.create({
-        data: {
-          username: 'testusername',
-          password: bcrypt.hashSync('testpassword', 8)
-        }
-      })
-
+    it('should respond with a `400` status code when given invalid credentials', async () => {
       const { body, status } = await request(app).post('/auth/signin').send({
         username: 'testusername',
         password: 'wrongpassword'
       })
-
       expect(status).toBe(400)
       expect(body).not.toHaveProperty('token')
     })
-    it('should return a 400 when user not found', async () => {
+    it('should respond with a `400` status code when the user cannot be found', async () => {
       const { body, status } = await request(app).post('/auth/signin').send({
-        username: 'testusername',
-        password: 'wrongpassword'
+        username: 'wrongusername',
+        password: 'testpassword'
       })
-
       expect(status).toBe(400)
       expect(body).not.toHaveProperty('token')
     })
-    it('should return a validation error when invalid request body provided', async () => {
+    it('should respond with a `400` status code when given an invalid request body', async () => {
       const { body, status } = await request(app).post('/auth/signin').send({
         email: 'test@prisma.io', // should be username
-        password: 'wrongpassword'
+        password: 'testpassword'
       })
-
       expect(status).toBe(400)
       expect(body.message).toBe(
         `Invalid or missing input provided for: username`
