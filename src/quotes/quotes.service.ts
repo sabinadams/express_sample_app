@@ -6,6 +6,9 @@ export const createQuote = async (
   userId: number
 ) => {
   return await prisma.quote.create({
+    include: {
+      tags: true
+    },
     data: {
       text,
       user: {
