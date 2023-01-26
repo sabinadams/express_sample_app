@@ -26,7 +26,7 @@ export const upsertTags = async (tags: string[]) => {
       const createdTags = await tx.tag.findMany({
         select: { id: true },
         where: {
-          name: { in: existingNames },
+          name: { in: tags },
           id: { notIn: existingIDs }
         }
       })
