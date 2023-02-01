@@ -109,7 +109,8 @@ describe('quotes.controller', () => {
       vi.mocked(QuoteService.createQuote).mockResolvedValueOnce({
         id: 1,
         text: 'Hello world',
-        userId: 1
+        userId: 1,
+        tags: []
       })
 
       await QuoteController.createQuote(request, response, next)
@@ -120,7 +121,8 @@ describe('quotes.controller', () => {
         quote: {
           id: 1,
           text: 'Hello world',
-          userId: 1
+          userId: 1,
+          tags: []
         }
       })
     })
